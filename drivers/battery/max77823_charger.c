@@ -13,6 +13,7 @@
 
 #include <linux/mfd/max77823.h>
 #include <linux/mfd/max77823-private.h>
+#include <linux/fastchg.h>
 #ifdef CONFIG_USB_HOST_NOTIFY
 #include <linux/host_notify.h>
 #endif
