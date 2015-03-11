@@ -4,7 +4,7 @@ obj-$(CONFIG_CPU_FREQ)			+= cpufreq.o
 obj-$(CONFIG_CPU_FREQ_STAT)             += cpufreq_stats.o
 
 # CPUfreq limit API
-obj-$(CONFIG_CPU_FREQ_LIMIT)             += cpufreq_limit.o
+obj-$(CONFIG_CPU_FREQ_LIMIT)            += cpufreq_limit.o
 
 # CPUfreq governors 
 obj-$(CONFIG_CPU_FREQ_GOV_PERFORMANCE)	+= cpufreq_performance.o
@@ -18,7 +18,8 @@ obj-$(CONFIG_CPU_FREQ_GOV_INTELLIACTIVE)+= cpufreq_intelliactive.o
 obj-$(CONFIG_CPU_FREQ_GOV_INTELLIMM)    += cpufreq_intellimm.o
 obj-$(CONFIG_CPU_FREQ_GOV_NIGHTMARE)	+= cpufreq_nightmare.o
 obj-$(CONFIG_CPU_FREQ_GOV_SMARTASS2) 	+= cpufreq_smartass2.o
-obj-$(CONFIG_CPU_FREQ_GOV_OPTIMAX) 		+= cpufreq_optimax.o
+obj-$(CONFIG_CPU_FREQ_GOV_OPTIMAX) 	+= cpufreq_optimax.o
+obj-$(CONFIG_CPU_FREQ_GOV_INTELLIDEMAND)+= cpufreq_intellidemand.o
 
 # CPUfreq cross-arch helpers
 obj-$(CONFIG_CPU_FREQ_TABLE)		+= freq_table.o
