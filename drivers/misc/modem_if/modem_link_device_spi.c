@@ -748,7 +748,8 @@ static void spi_rx_work(void)
 
 	if (!wake_lock_active(&spild->spi_wake_lock) ||
 		gpio_get_value(spild->gpio_ipc_srdy) == SPI_GPIOLEVEL_LOW ||
-		get_console_suspended() ||
+		//Fix phone delay
+		//get_console_suspended() ||
 		spild->spi_state == SPI_STATE_END)
 		return;
 
