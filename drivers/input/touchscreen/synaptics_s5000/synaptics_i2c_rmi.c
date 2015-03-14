@@ -32,6 +32,10 @@
 #include <linux/of_gpio.h>
 #include <linux/regulator/consumer.h>
 
+#ifdef CONFIG_CPUFREQ_HARDLIMIT
+#include <linux/cpufreq_hardlimit.h>
+#endif
+
 #define DRIVER_NAME "synaptics_rmi4_i2c"
 
 #define PROXIMITY
@@ -714,8 +718,8 @@ static void synaptics_change_dvfs_lock(struct work_struct *work)
 				__func__);
 		} else {
 		retval = set_freq_limit(DVFS_TOUCH_ID,
-				MIN_TOUCH_LIMIT_SECOND);
-		rmi4_data->dvfs_freq = MIN_TOUCH_LIMIT_SECOND;
+				check_cpufreq_hardlimit(touchboost_lo_freq));
+		rmi4_data->dvfs_freq = check_cpufreq_hardlimit(touchboost_lo_freq);
 		}
 	} else if (rmi4_data->dvfs_boost_mode == DVFS_STAGE_SINGLE || rmi4_data->dvfs_boost_mode == DVFS_STAGE_TRIPLE) {
 		retval = set_freq_limit(DVFS_TOUCH_ID, -1);
@@ -780,14 +784,14 @@ static void synaptics_set_dvfs_lock(struct synaptics_rmi4_data *rmi4_data,
 
 		if ((!rmi4_data->dvfs_lock_status) || (rmi4_data->dvfs_old_stauts < on)) {
 			cancel_delayed_work(&rmi4_data->work_dvfs_chg);
-				if (rmi4_data->dvfs_freq != MIN_TOUCH_LIMIT) {
+				if (rmi4_data->dvfs_freq != check_cpufreq_hardlimit(touchboost_hi_freq)) {
 				if (rmi4_data->dvfs_boost_mode == DVFS_STAGE_TRIPLE) 
 					ret = set_freq_limit(DVFS_TOUCH_ID,
-						MIN_TOUCH_LIMIT_SECOND);
+						check_cpufreq_hardlimit(touchboost_lo_freq));
 				else
 					ret = set_freq_limit(DVFS_TOUCH_ID,
-							MIN_TOUCH_LIMIT);
-					rmi4_data->dvfs_freq = MIN_TOUCH_LIMIT;
+							check_cpufreq_hardlimit(touchboost_hi_freq));
+					rmi4_data->dvfs_freq = check_cpufreq_hardlimit(touchboost_hi_freq);
 
 					if (ret < 0)
 						dev_err(&rmi4_data->i2c_client->dev,
