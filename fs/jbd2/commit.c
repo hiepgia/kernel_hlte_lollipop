@@ -1066,4 +1066,5 @@ restart_loop:
 	spin_unlock(&journal->j_list_lock);
 	write_unlock(&journal->j_state_lock);
 	wake_up(&journal->j_wait_done_commit);
+	}
 }
