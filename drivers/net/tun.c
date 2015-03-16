@@ -74,7 +74,6 @@
 #include <linux/tcp.h>
 #include <linux/ip.h>
 #include <net/ip.h>
-#include <net/netfilter/nf_conntrack.h>
 
 #define META_MARK_BASE_LOWER 100
 #define META_UID_PID_MARK_BASE_LOWER 150
@@ -127,13 +126,13 @@ do {								\
 
 /* Metadata header structure */
 
-struct tun_meta_header {
-	uid_t uid;
-	pid_t pid;
+struct knox_meta_param {
+    uid_t uid;
+    pid_t pid;
 };
 
-#define TUN_META_HDR_SZ sizeof(struct tun_meta_header)
-#define TUN_META_MARK_OFFSET offsetof(struct tun_meta_header, uid)
+#define TUN_META_HDR_SZ sizeof(struct knox_meta_param)
+#define TUN_META_MARK_OFFSET offsetof(struct knox_meta_param, uid)
 // ------------- END of KNOX_VPN -------------------//
 
 #define FLT_EXACT_COUNT 8
@@ -795,29 +794,33 @@ static ssize_t tun_chr_aio_write(struct kiocb *iocb, const struct iovec *iv,
      * This automatically reflects in the IP header length (IHL)
      */
 static int knoxvpn_tun_uidpid(struct tun_struct *tun, struct sk_buff *skb, const struct iovec *iv, int* len, ssize_t* total)
-{
-    struct nf_conn *ct;
-	enum ip_conntrack_info ctinfo;
-	struct tun_meta_header metalocal = {0,0};
+{ 
+    struct skb_shared_info * temp = NULL;
+	struct knox_meta_param metalocal = {0,0};
+    
 
-	ct = nf_ct_get(skb, &ctinfo);
-
-    if ( (tun->flags & TUN_META_HDR) == 0 || skb == NULL || ct == NULL || ct->mark < META_UID_PID_MARK_BASE_LOWER || META_UID_PID_MARK_BASE_UPPER < ct->mark ){
+    temp = skb_shinfo(skb);  
+        
+    if ( (tun->flags & TUN_META_HDR) == 0 || skb == NULL || temp == NULL || temp->knox_mark < META_UID_PID_MARK_BASE_LOWER || META_UID_PID_MARK_BASE_UPPER < temp->knox_mark ){
         metalocal.uid = 0;
         metalocal.pid = 0;
+
     }
-    else{    
-        metalocal.uid = skb->uid;
-        metalocal.pid = skb->pid;
+    else{
+        metalocal.uid = temp->uid;
+        metalocal.pid = temp->pid;
     }
 
-
+    if(temp!=NULL){
+        temp->uid = 0;
+        temp->pid = 0;
+    }
 
     if (tun->flags & TUN_META_HDR) {
 #ifdef TUN_DEBUG
         pr_err("KNOX: Appending uid: %d and pid: %d", metalocal.uid, metalocal.pid);
 #endif
-        if (unlikely(memcpy_toiovecend(iv, (void *)&metalocal, (*total), sizeof(struct tun_meta_header)))) {
+        if (unlikely(memcpy_toiovecend(iv, (void *)&metalocal, (*total), sizeof(struct knox_meta_param)))) {
             return -1;
         }			
         (*total) += TUN_META_HDR_SZ;
