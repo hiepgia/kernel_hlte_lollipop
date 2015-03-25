@@ -285,6 +285,7 @@ config ARCH_MSM8974
 	select MSM_ULTRASOUND_B
 	select MSM_RPM_LOG
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
+	select HAS_MACH_MEMUTILS
 	select KRAIT_REGULATOR
 	select ENABLE_VMALLOC_SAVINGS
 
@@ -4745,6 +4746,12 @@ config WALL_CLK_SYSFS
 	help
 	 Support the wallclk directory in sysfs filesystem to enable the
 	 wall clock simulation and read the current SFN.
+
+config HAS_MACH_MEMUTILS
+	default n
+	bool "Motorola MSM memcpy enhancements"
+	help
+	Faster memcpy performance for Krait
 
 config I2C_ACTUATOR
 	bool "support autofocus on camera without using cci"
